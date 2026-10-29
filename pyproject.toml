@@ -7,7 +7,9 @@ authors = [
     { name = "Riya P", email = "riya.prabhu@uga.edu" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "pandas>=3.1.0",
+]
 
 [project.scripts]
 example-repo = "example_repo:main"
