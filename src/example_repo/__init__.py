@@ -17,21 +17,28 @@ def bar_graph(df: pd.DataFrame) -> None:
     print("\n=== Data Summary ===")
     print(df.info())
     #check sum on null values in each column
-    print(df.isnull().sum())
+    print(f"Sum null values: {df.isnull().sum()}")
     #visualizations
     text_columns = df.select_dtypes(include=["object","category"]).columns
-    if (len(text_columns) >0):
+    print(f"Data types:\n{df.dtypes}")
+    if (len(text_columns) > 0):
         target_column = text_columns[0]
-        print(f"\nBar chart distribution of '{target_column}'")
+        value_counts = df[target_column].value_counts()
         #chart figure layout
-        plt.figure(figsize=(10,6))
-        df[target_column].value_counts().plot(kind="bar", color="purple", edgecolor="black")
+        fig = plt.figure(figsize=(10,10))
+        ax = fig.add_subplot()
+        # This line is to create a horizontal bar chart using the value counts of the target column
+        ax.barh(value_counts.index, value_counts.values, color="purple", edgecolor="black")
+        # .plot(kind="bar", color="purple", edgecolor="black")
         plt.title(f"Distribution of Items by '{target_column}'")
+        # This line is to set the x-axis label to the name of the target column instead of the default label
         plt.xlabel(target_column)
+        # This line is to set the y-axis label to "Count" instead of the default label
         plt.ylabel("Count")
         plt.xticks(rotation=45, ha="right")
         plt.tight_layout()
         plt.show()
+        print(f"\nBar chart distribution of '{target_column}'")
     else:
         print("No columns found for visualization.")
 
