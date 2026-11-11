@@ -42,11 +42,23 @@ def bar_graph(df: pd.DataFrame) -> None:
     else:
         print("No columns found for visualization.")
 
-# def pie_chart(df: pd.DataFrame) -> None:
+def payment_chart(df: pd.DataFrame) -> None:
+    """Payment Percentages by Item Purchased"""
+    # pd.crosstab() calculates the percentage of each payment method for each item purchased.
+    # Two dataframes: df["Item Purchased"] and df["Payment Method"] are the two columns used to create the crosstab.
+    print(f"\nPayment Percentages by Item Purchased:")
+    payment_percentages = pd.crosstab(
+        df["Item Purchased"],
+        df["Payment Method"],
+        normalize="index"
+    ) * 100
+    # payment_percentages.round(1) rounds the percentages to one decimal place for better readability.
+    print(payment_percentages.round(1))
 
 def main() -> None:
     df = load()
     #print(f"{len(df)} rows, {len(df.columns)} columns")
     #print(df.head())
-    bar_graph(df)
+    #bar_graph(df)
+    payment_chart(df)
 
