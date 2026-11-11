@@ -42,8 +42,8 @@ def bar_graph(df: pd.DataFrame) -> None:
     else:
         print("No columns found for visualization.")
 
-def payment_chart(df: pd.DataFrame) -> None:
-    """Payment Percentages by Item Purchased"""
+def payment_chart(df: pd.DataFrame) -> pd.DataFrame:
+    """Plot Payment Percentages by Item Purchased"""
     # pd.crosstab() calculates the percentage of each payment method for each item purchased.
     # Two dataframes: df["Item Purchased"] and df["Payment Method"] are the two columns used to create the crosstab.
     print(f"\nPayment Percentages by Item Purchased:")
@@ -54,11 +54,37 @@ def payment_chart(df: pd.DataFrame) -> None:
     ) * 100
     # payment_percentages.round(1) rounds the percentages to one decimal place for better readability.
     print(payment_percentages.round(1))
+    return payment_percentages
+    
+def payment_percentages_plot(payment_percentages:pd.DataFrame) -> None:
+    # payment_percentages.plot() creates a bar chart to visualize the payment percentages by item purchased 
+    # payment_percentages is the pandas dataframe created earlier
+    ax = payment_percentages.plot(
+        kind="bar",
+        # stacked=True puts the payment methods on top of each other in the bar chart, making it easier to compare the total percentages for each item purchased.
+        stacked=True,
+        figsize=(10, 6)
+    )
+
+    ax.set_title("Payment Percentages by Item Purchased")
+    ax.set_xlabel("Item Purchased")
+    ax.set_ylabel("Percentage of purchases")
+    # set_ylim(0, 100) sets the y-axis limits to be between 0 and 100, which is reasonable for the given dataset
+    ax.set_ylim(0, 100)
+
+    # Rotate the x-axis labels for better readability
+    plt.xticks(rotation=45, ha="right")
+    # Add a legend to the chart to indicate which color corresponds to which payment method
+    plt.legend(title="Payment Method")
+    # tight_layout() adjusts the layout of the chart to make sure that all elements fit within the figure area and are not cut off.
+    plt.tight_layout()
+    plt.show()
 
 def main() -> None:
     df = load()
     #print(f"{len(df)} rows, {len(df.columns)} columns")
     #print(df.head())
     #bar_graph(df)
-    payment_chart(df)
-
+    #payment_chart(df)
+    percentages = payment_chart(df)
+    payment_percentages_plot(percentages)
