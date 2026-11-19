@@ -3,6 +3,7 @@ from pathlib import Path
 from scipy.stats import chi2_contingency
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np 
 
 
 def load() -> pd.DataFrame:
@@ -103,6 +104,62 @@ def payment_chi_squared(df: pd.DataFrame) -> None:
     print(expected_table.round(2))
     # Check for expected counts below 5
     print(f"\nCells with expected counts below 5: {(expected_table < 5).sum()}")
+
+def make_synthetic_data(card_probabilities, n_per_item=100, seed=42):
+    """Generate purchases using a card probability for each category."""
+    # Create a random number generator with a fixed seed for reproducibility.
+    rng = np.random.default_rng(seed)
+    # Define the item categories and their corresponding card probabilities.
+    categories = np.array([
+        "Handbag", "T-shirt", "Trousers",
+        "Shoes", "Coat", "Hat"
+    ])
+    # Create 100 purchase records for each item category.
+    items = np.repeat(categories, n_per_item)
+    # Give each purchase its category's card probability.
+    probabilities = np.repeat(card_probabilities, n_per_item)
+    # Generate and store one random number per purchase.
+    random_numbers = rng.random(len(items))
+    # A number below the card probability produces a card payment.
+    payments = np.where(
+        random_numbers < probabilities,
+        "Credit Card",
+        "Cash"
+    )
+    # Create a DataFrame with the generated data.
+    return pd.DataFrame({
+        "Item Purchased": items,
+        "Card Probability": probabilities,
+        "Random Number": random_numbers,
+        "Payment Method": payments
+    })
+
+def plot_synthetic_data(data, title):
+    """Compare the generating probabilities with observed percentages."""
+    # Calculate the expected card payment percentages for each item category based on the generating probabilities.
+    expected = (
+        data.groupby("Item Purchased")["Card Probability"].first() * 100
+    )
+    # Calculate the observed card payment percentages for each item category based on the simulated data.
+    observed = (
+        data.assign(is_card=data["Payment Method"] == "Credit Card")
+        .groupby("Item Purchased")["is_card"].mean() * 100
+    )
+    # Create a DataFrame to compare the expected and observed percentages.
+    comparison = pd.DataFrame({
+        "Generating rule": expected,
+        "Simulated sample": observed
+    })
+    # Create a bar plot to visualize the comparison between the generating probabilities and observed percentages.
+    ax = comparison.plot.bar(figsize=(9, 5))
+    ax.set_title(title)
+    ax.set_ylabel("Card payments (%)")
+    ax.set_xlabel("Item category")
+    ax.set_ylim(0, 100)
+
+    plt.xticks(rotation=45, ha="right")
+    plt.tight_layout()
+    plt.show()
 
 def main() -> None:
     df = load()
