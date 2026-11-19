@@ -105,6 +105,7 @@ def payment_chi_squared(df: pd.DataFrame) -> None:
     # Check for expected counts below 5
     print(f"\nCells with expected counts below 5: {(expected_table < 5).sum()}")
 
+# 
 def make_synthetic_data(card_probabilities, n_per_item=100, seed=42):
     """Generate purchases using a card probability for each category."""
     # Create a random number generator with a fixed seed for reproducibility.
